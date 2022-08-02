@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tic Tac Toe game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        nav {
+            height: 65px;
+            font-size: 27px;
+            background: black;
+            color: white;
+            text-shadow: 5px 5px 5px rgb(208, 29, 86);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-family: 'roboto', sans-serif;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        .gameContainer {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            position: relative;
+            display: grid;
+            grid-template-rows: repeat(3, 10vw);
+            grid-template-columns: repeat(3, 10vw);
+            font-family: 'roboto', sans-serif;
+        }
+
+        .box {
+            border: 2px solid black;
+            font-size: 7.5vw;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box:hover {
+            background-color: #ede7f3;
+        }
+
+        .gameInfo {
+            padding: 50px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+        }
+
+        .imgBx img {
+            width: 0;
+            margin: 20px;
+            transition: width 1s ease-in-out;
+        }
+
+        .br-0 {
+            border-right: 0;
+        }
+
+        .bl-0 {
+            border-left: 0;
+        }
+
+        .bt-0 {
+            border-top: 0;
+        }
+
+        .bb-0 {
+            border-bottom: 0;
+        }
+
+        .gameInfo h1 {
+            margin-bottom: 20px;
+            font-size: 6vmin;
+        }
+
+        .info {
+        	color: rgb(22, 117, 154);
+            font-size: 24px;
+            font-weight: bolder;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        #reset {
+            color: white;
+            background-color: rgb(22, 117, 154);
+            padding: 8px 23px;
+            margin: 10px 23px;
+            border: none;
+            outline: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bolder;
+        }
+
+        #reset:hover {
+            color: rgb(22, 117, 154);
+            background-color: white;
+            box-shadow: 2px 2px 10px rgb(22, 117, 154);
+        }
+
+        .line{
+            position: absolute;
+            background: rgb(22, 117, 154);
+            width: 0;
+            height: 8px;
+            border-radius: 3px;
+            transition: width 1s ease-in-out;
+        }
+
+        @media(max-width:800px) {
+            .gameContainer{
+                margin-top: 30px;
+                flex-wrap: wrap;
+            }
+            .container {
+                grid-template-rows: repeat(3, 20vw);
+                grid-template-columns: repeat(3, 20vw);
+            }
+            #reset{
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li>MyTicTacToe.com</li>
+        </ul>
+    </nav>
+    <div class="gameContainer">
+        <div class="container">
+            <div class="line"></div>
+            <div class="box bt-0 bl-0"><span class="boxTxt"></span></div>
+            <div class="box bt-0"><span class="boxTxt"></span></div>
+            <div class="box bt-0 br-0"><span class="boxTxt"></span></div>
+            <div class="box bl-0"><span class="boxTxt"></span></div>
+            <div class="box"><span class="boxTxt"></span></div>
+            <div class="box br-0"><span class="boxTxt"></span></div>
+            <div class="box bb-0 bl-0"><span class="boxTxt"></span></div>
+            <div class="box bb-0"><span class="boxTxt"></span></div>
+            <div class="box bb-0 br-0"><span class="boxTxt"></span></div>
+        </div>
+        <div class="gameInfo">
+            <h1>Welcome to MyTicTacToe</h1>
+            <div>
+                <span class="info">Turn for X</span>
+                <button id="reset">Reset</button>
+            </div>
+            <div class="imgBx">
+                <img src="https://c.tenor.com/aKFaZBrZFYcAAAAM/excited-spin.gif" alt="">
+            </div>
+        </div>
+    </div>
+    <script>
+        // let music = new Audio("music.mp3");
+        let audioTurn = new Audio("click.wav");
+        // let gameover = new Audio("gameover.mp3");
+        let turn = "X";
+        let isgameover = false;
+
+        //function to change the turn
+        const changeTurn = () => {
+            return turn === "X" ? "0" : "X";
+        }
+
+        //function to check for a win
+        const checkWin = () => {
+            let boxTxts = document.getElementsByClassName('boxTxt');
+            let wins = [
+                [0, 1, 2, 5, 5, 0],
+                [3, 4, 5, 5, 15, 0],
+                [6, 7, 8, 5, 25, 0],
+                [0, 3, 6, -5, 15, 90],
+                [1, 4, 7, 5, 15, 90],
+                [2, 5, 8, 15, 15, 90],
+                [0, 4, 8, 5, 15, 45],
+                [2, 4, 6, 5, 15, 135],
+            ]
+            wins.forEach(e => {
+                if ((boxTxts[e[0]].innerText === boxTxts[e[1]].innerText) && (boxTxts[e[1]].innerText === boxTxts[e[2]].innerText) && (boxTxts[e[0]].innerText !== '')) {
+                    isgameover = true;
+                    document.querySelector(".info").innerText = boxTxts[e[0]].innerText + " Won";
+                    document.querySelector(".imgBx").getElementsByTagName("img")[0].style.width = "200px";
+                    document.querySelector(".line").style.transform = `translate(${e[3]}vw, ${e[4]}vw) rotate(${e[5]}deg)`;
+                    document.querySelector(".line").style.width = "20vw";
+                }
+            })
+        }
+
+        //Game Logic
+        let boxes = document.getElementsByClassName("box");
+        Array.from(boxes).forEach(element => {
+            let boxTxt = element.querySelector('.boxTxt')
+            element.addEventListener('click', () => {
+                if (boxTxt.innerText === '') {
+                    boxTxt.innerText = turn;
+                    turn = changeTurn();
+                    audioTurn.play();
+                    checkWin();
+                    if (!isgameover) {
+                        document.getElementsByClassName("info")[0].innerText = "Turn for " + turn;
+                    }
+                }
+            });
+        });
+
+        reset.addEventListener('click', () => {
+            let boxTxts = document.querySelectorAll('.boxTxt');
+            Array.from(boxTxts).forEach(element => {
+                element.innerText = '';
+            });
+            turn = "X";
+            isgameover = false;
+            audioTurn.play();
+            document.getElementsByClassName("info")[0].innerText = "Turn for " + turn;
+            document.querySelector(".imgBx").getElementsByTagName("img")[0].style.width = "0";
+            document.querySelector(".line").style.width = "0";
+        })
+
+    </script>
+</body>
+
+</html>
